@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
     try {
       // Veritabanını oku
-      const dbResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/db`);
+      const dbResponse = await fetch('http://localhost:3000/api/db');
       if (!dbResponse.ok) {
         throw new Error('Veritabanı okunamadı');
       }
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       dbData.messages.push(newMessage);
 
       // Veritabanına yaz
-      const writeResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/db`, {
+      const writeResponse = await fetch('http://localhost:3000/api/db', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
