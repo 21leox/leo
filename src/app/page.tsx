@@ -23,9 +23,24 @@ interface Document {
   date: string;
 }
 
+interface PersonalInfo {
+  name: string;
+  title: string;
+  description: string;
+  email: string;
+  phone: string;
+  location: string;
+  social: {
+    github: string;
+    linkedin: string;
+    twitter: string;
+  };
+}
+
 export default function Home() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
+  const [personalInfo, setPersonalInfo] = useState<PersonalInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,6 +54,7 @@ export default function Home() {
         console.log('Fetched data:', data); // Debug için
         setProjects(data.projects || []);
         setDocuments(data.documents || []);
+        setPersonalInfo(data.personalInfo || null);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -65,7 +81,7 @@ export default function Home() {
       <section className="relative h-screen flex items-center justify-center bg-gradient-to-r from-gray-900 to-gray-800">
         <div className="text-center text-white z-10">
           <h1 className="text-5xl font-bold mb-4">Hoş Geldiniz</h1>
-          <p className="text-xl mb-8">Yazılım Geliştirici & Proje Yöneticisi</p>
+          <p className="text-xl mb-8">{personalInfo?.title || 'Yazılım Geliştirici & Proje Yöneticisi'}</p>
           <Link 
             href="#about" 
             className="bg-indigo-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-indigo-700 transition-all"
@@ -84,7 +100,7 @@ export default function Home() {
               <div className="relative w-full h-[400px] rounded-lg overflow-hidden shadow-xl">
                 <Image
                   src="/profile.jpg"
-                  alt="Leo'nun Profil Fotoğrafı"
+                  alt={`${personalInfo?.name || 'Nurullah'}'nin Profil Fotoğrafı`}
                   fill
                   className="object-cover"
                   priority
@@ -93,7 +109,7 @@ export default function Home() {
               </div>
             </div>
             <div className="md:w-1/2 text-gray-300">
-              <h3 className="text-2xl font-semibold mb-4 text-white">Merhaba, Ben Leo</h3>
+              <h3 className="text-2xl font-semibold mb-4 text-white">{personalInfo?.description || 'Merhaba, Ben Nurullah'}</h3>
               <p className="mb-4">
                 Yazılım geliştirme dünyasında kendini sürekli geliştirmeyi hedefleyen bir yazılım mühendisiyim. Ağırlıklı olarak web teknolojileriyle ilgileniyor, front-end ve back-end tarafında projeler geliştiriyorum.
               </p>
