@@ -1,6 +1,4 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 
 export async function POST(request: Request) {
   try {
@@ -32,12 +30,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const dbPath = path.join(process.cwd(), 'src/data/db.json');
-
     try {
-      // Dosyayı oku
-      const fileContent = await fs.promises.readFile(dbPath, 'utf-8');
-      const dbData = JSON.parse(fileContent);
+      // Veritabanını oku
+      const dbResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/db`);
+      if (!dbResponse.ok) {
+        throw new Error('Veritabanı okunamadı');
+      }
+      const dbData = await dbResponse.json();
 
       // Yeni mesajı ekle
       const newMessage = {
@@ -56,24 +55,25 @@ export async function POST(request: Request) {
 
       dbData.messages.push(newMessage);
 
-      // Dosyaya yaz
-      await fs.promises.writeFile(dbPath, JSON.stringify(dbData, null, 2));
+      // Veritabanına yaz
+      const writeResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/db`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dbData),
+      });
+
+      if (!writeResponse.ok) {
+        throw new Error('Veritabanına yazılamadı');
+      }
 
       return NextResponse.json({ 
         success: true,
         message: 'Mesajınız başarıyla gönderildi'
       });
-    } catch (fileError) {
-      console.error('Database error:', fileError);
-      
-      // Dosya okuma/yazma hatası durumunda
-      if (fileError instanceof Error) {
-        return NextResponse.json(
-          { error: 'Veritabanı işlemi sırasında bir hata oluştu: ' + fileError.message },
-          { status: 500 }
-        );
-      }
-      
+    } catch (dbError) {
+      console.error('Database operation error:', dbError);
       return NextResponse.json(
         { error: 'Mesaj kaydedilirken bir hata oluştu' },
         { status: 500 }
