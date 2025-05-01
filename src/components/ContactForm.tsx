@@ -36,7 +36,7 @@ export default function ContactForm() {
 
       setStatus({
         type: 'success',
-        message: 'Mesajınız başarıyla gönderildi. En kısa sürede size dönüş yapacağız.'
+        message: data.message || 'Mesajınız başarıyla gönderildi. En kısa sürede size dönüş yapacağız.'
       });
       setFormData({ name: '', email: '', message: '' });
     } catch (error) {
@@ -71,6 +71,7 @@ export default function ContactForm() {
           value={formData.name}
           onChange={handleChange}
           required
+          minLength={2}
           className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           placeholder="Adınız ve soyadınız"
         />
@@ -102,6 +103,7 @@ export default function ContactForm() {
           value={formData.message}
           onChange={handleChange}
           required
+          minLength={10}
           rows={4}
           className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           placeholder="Mesajınızı buraya yazın..."
