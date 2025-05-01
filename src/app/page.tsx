@@ -109,7 +109,7 @@ export default function Home() {
               </div>
             </div>
             <div className="md:w-1/2 text-gray-300">
-              <h3 className="text-2xl font-semibold mb-4 text-white">{personalInfo?.description || 'Merhaba, Ben Nurullah'}</h3>
+              <h3 className="text-2xl font-semibold mb-4 text-white">{personalInfo?.description || 'Merhaba, Ben Leo'}</h3>
               <p className="mb-4">
                 Yazılım geliştirme dünyasında kendini sürekli geliştirmeyi hedefleyen bir yazılım mühendisiyim. Ağırlıklı olarak web teknolojileriyle ilgileniyor, front-end ve back-end tarafında projeler geliştiriyorum.
               </p>
