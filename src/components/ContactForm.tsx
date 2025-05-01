@@ -28,8 +28,10 @@ export default function ContactForm() {
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Mesaj gönderilemedi');
+        throw new Error(data.error || 'Mesaj gönderilemedi');
       }
 
       setStatus({
@@ -38,9 +40,10 @@ export default function ContactForm() {
       });
       setFormData({ name: '', email: '', message: '' });
     } catch (error) {
+      console.error('Form submission error:', error);
       setStatus({
         type: 'error',
-        message: 'Mesaj gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.'
+        message: error instanceof Error ? error.message : 'Mesaj gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.'
       });
     } finally {
       setIsSubmitting(false);
