@@ -1,9 +1,62 @@
-import React from 'react';
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import ContactForm from '@/components/ContactForm';
+
+interface Project {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  technologies: string[];
+  date: string;
+}
+
+interface Document {
+  id: number;
+  title: string;
+  type: string;
+  file: string;
+  date: string;
+}
 
 export default function Home() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/data');
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        const data = await response.json();
+        console.log('Fetched data:', data); // Debug için
+        setProjects(data.projects || []);
+        setDocuments(data.documents || []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-white text-xl">Yükleniyor...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-900">
       <Navbar />
@@ -73,27 +126,38 @@ export default function Home() {
       <section id="projects" className="py-20 bg-gray-900">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-white">Projelerim</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Project Card */}
-            <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-              <div className="relative h-48">
-                <Image
-                  src="/project1.jpg"
-                  alt="Proje Görseli"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold mb-2 text-white">Proje Adı</h3>
-                <p className="text-gray-300 mb-4">Proje açıklaması buraya gelecek.</p>
-                <div className="flex gap-2">
-                  <span className="px-3 py-1 bg-indigo-900 text-indigo-300 rounded-full text-sm">React</span>
-                  <span className="px-3 py-1 bg-blue-900 text-blue-300 rounded-full text-sm">Node.js</span>
+          {projects.length === 0 ? (
+            <p className="text-gray-400 text-center">Henüz proje eklenmemiş.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {projects.map((project) => (
+                <div key={project.id} className="bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+                  <div className="relative h-48">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold text-white mb-2">{project.title}</h3>
+                    <p className="text-gray-300 mb-4">{project.description}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {project.technologies.map((tech, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-indigo-900 text-indigo-300 rounded-full text-sm"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -101,22 +165,35 @@ export default function Home() {
       <section id="documents" className="py-20 bg-gray-800">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-white">Belgelerim</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Document Card */}
-            <div className="bg-gray-900 rounded-lg shadow-lg p-6 border border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-indigo-900 rounded-full flex items-center justify-center">
-                  <svg className="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
+          {documents.length === 0 ? (
+            <p className="text-gray-400 text-center">Henüz belge eklenmemiş.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {documents.map((doc) => (
+                <div key={doc.id} className="bg-gray-900 p-6 rounded-lg shadow-lg">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-indigo-900 rounded-full flex items-center justify-center">
+                      <svg className="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">{doc.title}</h3>
+                      <p className="text-gray-400">{doc.type}</p>
+                      <a
+                        href={doc.file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-indigo-400 hover:text-indigo-300 text-sm mt-2 inline-block"
+                      >
+                        Belgeyi Görüntüle
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white">Sertifika Adı</h3>
-                  <p className="text-gray-400">Kurum Adı - 2024</p>
-                </div>
-              </div>
+              ))}
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -125,38 +202,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-white">İletişim</h2>
           <div className="max-w-xl mx-auto">
-            <form className="space-y-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300">İsim</label>
-                <input
-                  type="text"
-                  id="name"
-                  className="mt-1 block w-full rounded-md bg-gray-800 border-gray-700 text-white focus:border-indigo-500 focus:ring-indigo-500"
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300">E-posta</label>
-                <input
-                  type="email"
-                  id="email"
-                  className="mt-1 block w-full rounded-md bg-gray-800 border-gray-700 text-white focus:border-indigo-500 focus:ring-indigo-500"
-                />
-              </div>
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-300">Mesaj</label>
-                <textarea
-                  id="message"
-                  rows={4}
-                  className="mt-1 block w-full rounded-md bg-gray-800 border-gray-700 text-white focus:border-indigo-500 focus:ring-indigo-500"
-                ></textarea>
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-indigo-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-indigo-700 transition-all"
-              >
-                Gönder
-              </button>
-            </form>
+            <ContactForm />
           </div>
         </div>
       </section>

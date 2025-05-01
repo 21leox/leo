@@ -1,0 +1,18 @@
+{
+  "messages": [
+    {
+      "id": 1746122638401,
+      "name": "leo",
+      "email": "leoxwass@gmail.com",
+      "message": "merhaba admin ",
+      "date": "2025-05-01T18:03:58.401Z",
+      "read": true
+    }
+  ],
+  "projects": [],
+  "documents": [],
+  "admin": {
+    "username": "admin",
+    "password": "admin123"
+  }
+}
